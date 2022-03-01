@@ -30,6 +30,18 @@
                 </div>
 
                 <div class="form-group mb-2 mr-2">
+                    <label for="brandId" class="sr-only">Brands</label>
+                    <select class="form-control" id="brandId" name="brandId">
+                        <option th:selected="${param.brandId == null || param.brandId[0].isBlank()}" value="-1">All</option>
+                        <option th:each="br : ${brands}"
+                                th:text="${br.name}"
+                                th:value="${br.id}"
+                                th:selected="${#strings.equals((param.brandId != null ? param.brandId[0] : ''), #strings.toString(br.id))}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-2 mr-2">
                     <label for="usernameFilter" class="sr-only">Product name</label>
                     <input type="text" class="form-control" id="usernameFilter" th:value="${param.usernameFilter}"
                            name="usernameFilter" placeholder="Username filter">
@@ -46,6 +58,7 @@
                     <th scope="col" th:replace="fragments/sort_header :: sort_header_product ('Id', 'id')"></th>
                     <th scope="col" th:replace="fragments/sort_header :: sort_header_product ('Name', 'name')"></th>
                     <th scope="col" th:replace="fragments/sort_header :: sort_header_product ('Category', 'category.name')"></th>
+                    <th scope="col" th:replace="fragments/sort_header :: sort_header_product ('Brand', 'brand.name')"></th>
                     <th scope="col" th:replace="fragments/sort_header :: sort_header_product ('Price', 'price')"></th>
                     <th scope="col">Actions</th>
                 </tr>

@@ -26,6 +26,9 @@ public class Product {
     @ManyToOne(optional = false)
     private Category category;
 
+    @ManyToOne(optional = false)
+    private Brand brand;
+
     @OneToMany(mappedBy = "product",
             orphanRemoval = true,
             cascade = CascadeType.ALL)
@@ -34,12 +37,13 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String name, String description, BigDecimal price, Category category) {
+    public Product(Long id, String name, String description, BigDecimal price, Category category, Brand brand) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
+        this.brand = brand;
     }
 
     public Long getId() {
@@ -88,6 +92,14 @@ public class Product {
 
     public void setPictures(List<Picture> pictures) {
         this.pictures = pictures;
+    }
+
+    public Brand getBrand() {
+        return brand;
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
     }
 
     @Override
