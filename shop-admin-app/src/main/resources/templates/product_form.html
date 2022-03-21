@@ -38,6 +38,17 @@
                                 th:selected="${product.category?.id == category.id}"></option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label for="brands">Brand</label>
+                    <select class="form-control" id="brands" name="brand" required>
+                        <option th:each="br : ${brands}"
+                                th:text="${br.name}"
+                                th:value="${br.id}"
+                                th:selected="${product.brand?.id == br.id}"></option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Add product images</label>
                     <input type="file" class="form-control" id="newPicture" th:field="*{newPicture}"
@@ -51,11 +62,10 @@
             <div class="card-columns" style="column-count: 5">
                 <div class="card" th:each="picId : ${product.pictures}">
                     <!-- TODO -->
-                    <img class="card-img-bottom" >
+                    <img class="card-img-bottom" th:src="@{/picture/{pictureId}(pictureId=${picId})}"/>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
