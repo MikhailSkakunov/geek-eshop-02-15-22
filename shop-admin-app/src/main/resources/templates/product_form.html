@@ -42,10 +42,10 @@
                 <div class="form-group">
                     <label for="brands">Brand</label>
                     <select class="form-control" id="brands" name="brand" required>
-                        <option th:each="br : ${brands}"
-                                th:text="${br.name}"
-                                th:value="${br.id}"
-                                th:selected="${product.brand?.id == br.id}"></option>
+                        <option th:each="brand : ${brands}"
+                                th:text="${brand.name}"
+                                th:value="${brand.id}"
+                                th:selected="${product.brand?.id == brand.id}"></option>
                     </select>
                 </div>
 
@@ -61,7 +61,6 @@
         <div class="container-fluid mt-4">
             <div class="card-columns" style="column-count: 5">
                 <div class="card" th:each="picId : ${product.pictures}">
-                    <!-- TODO -->
                     <img class="card-img-bottom" th:src="@{/picture/{pictureId}(pictureId=${picId})}"/>
                 </div>
             </div>

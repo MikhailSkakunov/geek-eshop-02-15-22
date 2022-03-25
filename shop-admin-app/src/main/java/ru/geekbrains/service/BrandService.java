@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BrandService {
+
     List<BrandDto> findAll();
 
     Page<BrandDto> findAll(Integer page, Integer size, String sortField);
