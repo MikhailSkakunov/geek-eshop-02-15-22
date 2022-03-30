@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.sevice.ProductService;
+import ru.geekbrains.service.ProductService;
 
 import java.util.Optional;
 

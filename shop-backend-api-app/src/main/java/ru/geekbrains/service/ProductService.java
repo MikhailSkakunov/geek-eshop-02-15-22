@@ -1,4 +1,4 @@
-package ru.geekbrains.sevice;
+package ru.geekbrains.service;
 
 import org.springframework.data.domain.Page;
 import ru.geekbrains.controller.dto.ProductDto;

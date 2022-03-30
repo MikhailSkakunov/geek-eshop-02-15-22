@@ -11,6 +11,8 @@ import { GalleryComponent } from './component/gallery/gallery.component';
 import { ProductPaginationComponent } from './component/product-pagination/product-pagination.component';
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
+import { CartPageComponent } from './page/cart-page/cart-page.component';
+import {CartItemComponent} from "./component/cart-item/cart-item.component";
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import {FormsModule} from "@angular/forms";
     NavBarComponent,
     ProductFilterComponent,
     GalleryComponent,
-    ProductPaginationComponent
+    ProductPaginationComponent,
+    CartPageComponent,
+    CartItemComponent
   ],
   imports: [
     BrowserModule,
