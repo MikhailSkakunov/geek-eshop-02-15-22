@@ -1,6 +1,7 @@
 package ru.geekbrains.persist.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,6 +27,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "user")
+    List<Order> orders;
+
+
     public User() {
     }
 
@@ -35,6 +40,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.roles = roles;
+
     }
 
     public Long getId() {
