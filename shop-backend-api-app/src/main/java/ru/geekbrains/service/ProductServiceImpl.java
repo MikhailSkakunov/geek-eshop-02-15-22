@@ -1,4 +1,4 @@
-package ru.geekbrains.sevice;
+package ru.geekbrains.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductDto> findAll(Optional<Long> categoryId, Optional<String> namePattern,
+    public Page<ProductDto> findAll(Optional<Long> categoryId, Optional<Long> brandId, Optional<String> namePattern,
                                     Integer page, Integer size, String sortField) {
         Specification<Product> spec = Specification.where(null);
         if (categoryId.isPresent() && categoryId.get() != -1) {

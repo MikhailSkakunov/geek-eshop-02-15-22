@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Product} from "../../model/product";
+import {CartService} from "../../service/cart.service";
+import {AddLineItemDto} from "../../model/add-line-item-dto";
 
 @Component({
   selector: 'app-gallery',
@@ -7,9 +10,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GalleryComponent implements OnInit {
 
-  constructor() { }
+  @Input() products : Product[] = [];
+
+  constructor(private cartService: CartService) { }
 
   ngOnInit(): void {
   }
 
+  AdToCard(id: number) {
+    this.cartService.addToCart(new AddLineItemDto(id, 1, "", ""))
+      .subscribe();
+  }
 }

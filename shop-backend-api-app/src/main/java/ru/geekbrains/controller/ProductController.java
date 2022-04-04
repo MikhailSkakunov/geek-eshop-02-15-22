@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.geekbrains.controller.dto.ProductDto;
-import ru.geekbrains.sevice.ProductService;
+import ru.geekbrains.service.ProductService;
 
 import java.util.Optional;
 
@@ -30,12 +30,14 @@ public class ProductController {
     @GetMapping("/all")
     public Page<ProductDto> findAll(
             @RequestParam("categoryId") Optional<Long> categoryId,
+            @RequestParam("brandId") Optional<Long> brandId,
             @RequestParam("namePattern") Optional<String> namePattern,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size,
             @RequestParam("sortField") Optional<String> sortField, Model model) {
          return productService.findAll(
                 categoryId,
+                brandId,
                 namePattern,
                 page.orElse(1) - 1,
                 size.orElse(5),

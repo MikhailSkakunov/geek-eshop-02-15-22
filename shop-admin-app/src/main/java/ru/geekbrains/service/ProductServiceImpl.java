@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.geekbrains.controller.NotFoundException;
+import ru.geekbrains.controller.dto.BrandDto;
 import ru.geekbrains.controller.dto.CategoryDto;
 import ru.geekbrains.controller.dto.ProductDto;
+import ru.geekbrains.persist.BrandRepository;
 import ru.geekbrains.persist.CategoryRepository;
 import ru.geekbrains.persist.ProductRepository;
 import ru.geekbrains.persist.ProductSpecification;
+import ru.geekbrains.persist.model.Brand;
 import ru.geekbrains.persist.model.Category;
 import ru.geekbrains.persist.model.Picture;
 import ru.geekbrains.persist.model.Product;
@@ -29,18 +32,21 @@ public class ProductServiceImpl implements ProductService {
 
     private final CategoryRepository categoryRepository;
 
+    private final BrandRepository brandRepository;
+
     private final PictureService pictureService;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
-                              CategoryRepository categoryRepository, PictureService pictureService) {
+                              CategoryRepository categoryRepository, BrandRepository brandRepository, PictureService pictureService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.brandRepository = brandRepository;
         this.pictureService = pictureService;
     }
 
     @Override
-    public Page<ProductDto> findAll(Optional<Long> categoryId, Optional<String> namePattern,
+    public Page<ProductDto> findAll(Optional<Long> categoryId, Optional<Long> brandId, Optional<String> namePattern,
                                     Integer page, Integer size, String sortField) {
         Specification<Product> spec = Specification.where(null);
         if (categoryId.isPresent() && categoryId.get() != -1) {
@@ -50,23 +56,23 @@ public class ProductServiceImpl implements ProductService {
             spec = spec.and(ProductSpecification.byName(namePattern.get()));
         }
         return productRepository.findAll(spec, PageRequest.of(page, size, Sort.by(sortField)))
-                .map(product -> new ProductDto(product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        new CategoryDto(product.getCategory().getId(), product.getCategory().getName()),
-                        product.getPictures().stream().map(Picture::getId).collect(Collectors.toList())));
+                .map(this::toProductDto);
     }
 
     @Override
     public Optional<ProductDto> findById(Long id) {
         return productRepository.findById(id)
-                .map(product -> new ProductDto(product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getPrice(),
-                        new CategoryDto(product.getCategory().getId(), product.getCategory().getName()),
-                        product.getPictures().stream().map(Picture::getId).collect(Collectors.toList())));
+                .map(this::toProductDto);
+    }
+
+    private ProductDto toProductDto(Product product) {
+        return new ProductDto(product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                new CategoryDto(product.getCategory().getId(), product.getCategory().getName()),
+                new BrandDto(product.getBrand().getId(), product.getBrand().getName()),
+                product.getPictures().stream().map(Picture::getId).collect(Collectors.toList()));
     }
 
     @Override
@@ -76,9 +82,12 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new NotFoundException("")) : new Product();
         Category category = categoryRepository.findById(productDto.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+        Brand brand = brandRepository.findById(productDto.getBrand().getId())
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
 
         product.setName(productDto.getName());
         product.setCategory(category);
+        product.setBrand(brand);
         product.setPrice(productDto.getPrice());
         product.setDescription(productDto.getDescription());
 
