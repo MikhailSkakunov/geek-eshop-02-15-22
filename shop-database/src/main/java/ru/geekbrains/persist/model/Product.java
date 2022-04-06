@@ -34,6 +34,9 @@ public class Product {
             cascade = CascadeType.ALL)
     private List<Picture> pictures = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product")
+    private List<OrderLineItem> orderLineItems;
+
     public Product() {
     }
 
