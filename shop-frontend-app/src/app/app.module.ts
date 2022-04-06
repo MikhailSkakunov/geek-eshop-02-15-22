@@ -9,10 +9,13 @@ import { NavBarComponent } from './component/nav-bar/nav-bar.component';
 import { ProductFilterComponent } from './component/product-filter/product-filter.component';
 import { GalleryComponent } from './component/gallery/gallery.component';
 import { ProductPaginationComponent } from './component/product-pagination/product-pagination.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import { CartPageComponent } from './page/cart-page/cart-page.component';
 import {CartItemComponent} from "./component/cart-item/cart-item.component";
+import { LoginPageComponent } from './page/login-page/login-page.component';
+import { OrderPageComponent } from './page/order-page/order-page.component';
+import {UnauthorizedInterceptor} from "./helper/unauthorized-interceptor";
 
 @NgModule({
   declarations: [
@@ -24,7 +27,9 @@ import {CartItemComponent} from "./component/cart-item/cart-item.component";
     GalleryComponent,
     ProductPaginationComponent,
     CartPageComponent,
-    CartItemComponent
+    CartItemComponent,
+    LoginPageComponent,
+    OrderPageComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +37,9 @@ import {CartItemComponent} from "./component/cart-item/cart-item.component";
     HttpClientModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
