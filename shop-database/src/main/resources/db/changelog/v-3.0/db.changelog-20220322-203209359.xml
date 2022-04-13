@@ -9,9 +9,16 @@
         </createTable>
     </changeSet>
     <changeSet author="mike_ska (generated)" id="1647981140074-2">
-        <addUniqueConstraint columnNames="name" constraintName="UC_BRANDSNAME_COL" tableName="brands"/>
+        <addColumn tableName="products">
+            <column name="brand_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
     <changeSet author="mike_ska (generated)" id="1647981140074-3">
+        <addUniqueConstraint columnNames="name" constraintName="UC_BRANDSNAME_COL" tableName="brands"/>
+    </changeSet>
+    <changeSet author="mike_ska (generated)" id="1647981140074-4">
         <addForeignKeyConstraint baseColumnNames="brand_id" baseTableName="products" constraintName="FKa3a4mpsfdf4d2y6r8ra3sc8mv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="brands" validate="true"/>
     </changeSet>
 </databaseChangeLog>
