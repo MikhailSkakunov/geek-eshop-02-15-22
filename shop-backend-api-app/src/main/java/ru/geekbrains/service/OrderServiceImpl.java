@@ -4,6 +4,7 @@ package ru.geekbrains.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.controller.OrderLineItemDto;
 import ru.geekbrains.controller.dto.OrderDto;
@@ -14,6 +15,7 @@ import ru.geekbrains.persist.model.Order;
 import ru.geekbrains.persist.model.OrderLineItem;
 import ru.geekbrains.persist.model.Product;
 import ru.geekbrains.persist.model.User;
+import ru.geekbrains.service.dto.OrderStatus;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -29,19 +31,23 @@ public class OrderServiceImpl implements OrderService {
 
     private final CartService cartService;
 
+    private final UserRepository userRepository;
+
     private final ProductRepository productRepository;
 
-    private final UserRepository userRepository;
+    private final SimpMessagingTemplate template;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             CartService cartService,
+                            UserRepository userRepository,
                             ProductRepository productRepository,
-                            UserRepository userRepository) {
+                            SimpMessagingTemplate template) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
-        this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
+        this.template = template;
     }
 
     public List<OrderDto> findOrdersByUsername(String username) {
@@ -64,7 +70,6 @@ public class OrderServiceImpl implements OrderService {
                                 )).collect(Collectors.toList())
                 )).collect(Collectors.toList());
     }
-
 
     @Transactional
     public void createOrder(String username) {
@@ -97,11 +102,24 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
         order.setOrderLineItems(orderLineItems);
         orderRepository.save(order);
+        cartService.clear();
+
+        new Thread(() -> {
+            for (Order.OrderStatus status : Order.OrderStatus.values()) {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                logger.info("Sending next status {} for order {}", status, order.getId());
+                template.convertAndSend("/order_out/order", new OrderStatus(order.getId(), status.toString()));
+            }
+        }).start();
     }
 
     private Product findProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No product with id"));
     }
-
 }
+

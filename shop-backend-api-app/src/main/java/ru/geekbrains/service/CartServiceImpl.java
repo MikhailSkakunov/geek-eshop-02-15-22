@@ -64,5 +64,10 @@ public class CartServiceImpl implements CartService {
                 .stream().map(LineItem::getItemTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    @Override
+    public void clear() {
+        lineItems.clear();
+    }
 }
 
