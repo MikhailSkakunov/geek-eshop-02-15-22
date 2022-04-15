@@ -6,14 +6,15 @@ services:
     ports:
       - "8888:8888"
 
-#  shop-frontend-app:
-#    image: shop-frontend-app:latest
-#    ports:
-#      - 8080:80
-#    depends_on:
-#      - shop-admin-app
-#      - shop-backend-api-app
-#      - picture-service-app
+  shop-frontend-app:
+    image: shop-frontend-app:latest
+    ports:
+      - 8080:80
+    restart: always
+    depends_on:
+      - shop-admin-app
+      - shop-backend-api-app
+      - picture-service-app
 #
   shop-admin-app:
     container_name: shop-admin-app
@@ -26,6 +27,7 @@ services:
       - PROFILE=dock
       - CONFIG_SERVER_URL=http://cloud-config:8888
     command: bash -c "/apps/wait-for-service.sh db 3306 && /apps/wait-for-service.sh cloud-config 8888 && /apps/entrypoint.sh"
+    restart: always
     depends_on:
       - db
       - cloud-config
@@ -38,26 +40,38 @@ services:
     environment:
       - PROFILE=dock
       - CONFIG_SERVER_URL=http://cloud-config:8888
-    command: bash -c "/apps/wait-for-service.sh db 3306 && /apps/wait-for-service.sh cloud-config 8888 && /apps/wait-for-service.sh redis 6379 && /apps/entrypoint.sh"
+    command: bash -c "/apps/wait-for-service.sh rabbitmq 5672 && /apps/wait-for-service.sh db 3306 && /apps/wait-for-service.sh cloud-config 8888 && /apps/wait-for-service.sh redis 6379 && /apps/entrypoint.sh"
+    restart: always
     depends_on:
       - db
       - redis
       - cloud-config
-#
-#  picture-service-app:
-#    image: shop-picture-service-api/web:latest
-#    ports:
-#      - 8080
-#    volumes:
-#      - ./storage:/var/storage
-#    environment:
-#      - PROFILE=dock
-#      - CONFIG_SERVER_URL=http://cloud-config:8888
-#    command: bash -c "/apps/wait-for-service.sh db 3306 && /apps/wait-for-service.sh cloud-config 8888 && /apps/entrypoint.sh"
-#    depends_on:
-#      - db
-#      - cloud-config
-#
+      - shop-delivery-service
+      - rabbitmq
+
+  picture-service-app:
+    image: shop-picture-service-api/web:latest
+    ports:
+      - 8080
+    volumes:
+      - ./storage:/var/storage
+    environment:
+      - PROFILE=dock
+      - CONFIG_SERVER_URL=http://cloud-config:8888
+    command: bash -c "/apps/wait-for-service.sh db 3306 && /apps/wait-for-service.sh cloud-config 8888 && /apps/entrypoint.sh"
+    restart: always
+    depends_on:
+      - db
+      - cloud-config
+  shop-delivery-service:
+    image: shop-delivery-service/web:latest
+    command: bash -c "/apps/wait-for-service.sh rabbitmq 5672 && /apps/wait-for-service.sh cloud-config 8888 && /apps/entrypoint.sh"
+    restart: always
+    depends_on:
+      - cloud-config
+      - rabbitmq
+
+
   db:
     container_name: db
     image: mysql:8.0.28
@@ -75,3 +89,8 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379"
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    ports:
+      - 5672
+      - 15672:15672

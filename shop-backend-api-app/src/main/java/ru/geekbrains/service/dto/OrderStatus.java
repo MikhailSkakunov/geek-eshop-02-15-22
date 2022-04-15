@@ -6,6 +6,9 @@ public class OrderStatus {
 
     private String status;
 
+    public OrderStatus() {
+    }
+
     public OrderStatus(Long orderId, String status) {
         this.orderId = orderId;
         this.status = status;
