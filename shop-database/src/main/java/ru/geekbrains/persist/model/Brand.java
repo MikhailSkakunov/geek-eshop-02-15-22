@@ -22,10 +22,10 @@ public class Brand {
             cascade = CascadeType.ALL)
     private List<Product> products;
 
-    public Brand() {
+    public Brand(String brand) {
     }
 
-    public Brand(Long id, String name) {
+    public Brand() {
         this.id = id;
         this.name = name;
     }
